@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-12T17:25:07+09:00",
+  "updated_at": "2026-08-12T17:36:24+09:00",
   "source": "roxradar.com",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -84,7 +84,7 @@
       "sale_date": "2026-05-28",
       "sale_start_jst": "2026-05-28T18:00+09:00",
       "second_sale_jst": "2026-07-24T18:00+09:00",
-      "mix_doubles": "sold_out",
+      "mix_doubles": "available",
       "divisions_available": [
         "Doubles Men",
         "Doubles Mixed",
