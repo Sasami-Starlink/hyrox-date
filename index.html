@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#0d0d0d" />
+  <title>HYROX ウォッチ｜開催・チケット追跡</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="./config.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark">⬢</span>
+      <div>
+        <div class="brand-title">HYROX ウォッチ</div>
+        <div class="brand-sub" id="meta">読み込み中…</div>
+      </div>
+    </div>
+    <button id="refreshBtn" class="icon-btn" title="再読み込み" aria-label="再読み込み">⟳</button>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-view="triage">判断 <span class="badge" id="cnt-triage"></span></button>
+    <button class="tab" data-view="going">参加予定 <span class="badge" id="cnt-going"></span></button>
+    <button class="tab" data-view="all">一覧 <span class="badge" id="cnt-all"></span></button>
+  </nav>
+
+  <a id="lineBanner" class="line-banner" hidden href="#" target="_blank" rel="noopener">
+    <span class="line-ic">💬</span>
+    <span class="line-tx"><b>LINEで通知を受け取る</b><br>友だち追加すると、更新のたびに自動でお知らせ</span>
+    <span class="line-go">追加 ›</span>
+  </a>
+
+  <main id="list" class="list"></main>
+
+  <p class="foot">
+    情報源: RoxRadar / 公式。判断（行く・検討中・興味なし）はこの端末に保存されます。<br />
+    価格・所要時間は東京起点の概算目安（時期で変動）。海外の販売開始は日本時間で表示。
+  </p>
+
+  <script src="./app.js"></script>
+</body>
+</html>

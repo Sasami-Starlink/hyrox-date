@@ -1,0 +1,84 @@
+name: HYROX 収集＆通知＆公開
+
+on:
+  schedule:
+    - cron: "0 3 * * *"    # 毎日 03:00 UTC = 12:00 JST（正午）
+    - cron: "0 15 * * *"   # 毎日 15:00 UTC = 00:00 JST（深夜）
+  workflow_dispatch: {}     # 手動で「今すぐ更新」
+  push:
+    branches: [ main ]       # コード更新のたびに再公開
+
+permissions:
+  contents: write   # events.json のコミットに必要
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: リポジトリ取得
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # git show HEAD:events.json のため履歴を取得
+
+      - name: Python 準備
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 前回の events.json を退避（差分比較用）
+        run: git show HEAD:events.json > prev_events.json 2>/dev/null || echo '{}' > prev_events.json
+
+      - name: 開催・チケット情報を収集（crawl.py）
+        run: python3 crawl.py
+
+      - name: 差分を検知してLINE通知（失敗しても公開は続行）
+        continue-on-error: true
+        env:
+          LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
+          # 以下は任意（メールも併用する場合のみ設定）
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          APP_URL: ${{ vars.APP_URL }}
+        run: python3 notify.py prev_events.json events.json
+
+      - name: events.json の更新をコミット（失敗しても公開は続行）
+        continue-on-error: true
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add events.json
+          if git diff --cached --quiet; then
+            echo "変更なし"
+          else
+            git commit -m "chore: events.json 自動更新"
+            git pull --rebase --autostash origin main || true
+            git push || echo "push はスキップ（次回反映されます）"
+          fi
+
+      - name: 公開フォルダを作成（配信ファイルのみ）
+        run: |
+          rm -f prev_events.json
+          mkdir -p _site
+          cp *.html *.css *.js *.json *.webmanifest *.svg robots.txt _site/ 2>/dev/null || true
+          touch _site/.nojekyll
+          echo "=== _site 内容 ===" && ls -1 _site
+
+      - name: Pages 用アーティファクトをアップロード
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: GitHub Pages へデプロイ
+        id: deploy
+        uses: actions/deploy-pages@v4

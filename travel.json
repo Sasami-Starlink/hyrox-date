@@ -1,0 +1,86 @@
+{
+  "_note": "東京（羽田/成田）起点の所要時間・フライト概算費用（往復・2名利用を想定した目安）。時期で変動する参考値。手動で更新してよい。crawl.py が data-hyrox-code でマッチしてマージする。",
+  "origin": "東京（羽田/成田）",
+  "cities": [
+    {
+      "codes": ["TYO", "CHB"], "city_ja": "東京・千葉（幕張）", "country_ja": "日本", "country_en": "Japan", "travel_rank": 1,
+      "portal_url": "https://japan.hyrox.com/",
+      "travel": {"airport": "国内（幕張メッセ）", "flight": "国内・移動のみ", "access": "JR京葉線 海浜幕張駅から徒歩約8分", "total_hint": "都内から約1時間", "flight_price": "電車のみ（¥往復 約2,000〜3,000）", "price_note": "国内・目安"}
+    },
+    {
+      "codes": ["YOK"], "city_ja": "横浜", "country_ja": "日本", "country_en": "Japan", "travel_rank": 2,
+      "portal_url": "https://japan.hyrox.com/",
+      "travel": {"airport": "国内（パシフィコ横浜）", "flight": "国内・移動のみ", "access": "みなとみらい線 みなとみらい駅から徒歩約5分", "total_hint": "都内から約1時間", "flight_price": "電車のみ（¥往復 約1,000〜2,000）", "price_note": "国内・目安"}
+    },
+    {
+      "codes": ["NGO"], "city_ja": "名古屋", "country_ja": "日本", "country_en": "Japan", "travel_rank": 3,
+      "portal_url": "https://japan.hyrox.com/",
+      "travel": {"airport": "国内（ポートメッセなごや）", "flight": "新幹線 東京→名古屋 約1時間40分", "access": "あおなみ線 金城ふ頭駅すぐ（名古屋駅から約24分）", "total_hint": "ドアツードア 約3時間", "flight_price": "新幹線 ¥往復 約22,000／飛行機LCC ¥往復 約12,000〜大手 約30,000", "price_note": "国内・目安"}
+    },
+    {
+      "codes": ["OSA"], "city_ja": "大阪", "country_ja": "日本", "country_en": "Japan", "travel_rank": 4,
+      "portal_url": "https://japan.hyrox.com/",
+      "travel": {"airport": "国内（インテックス大阪）", "flight": "新幹線 東京→新大阪 約2時間30分", "access": "地下鉄中央線 コスモスクエア/中ふ頭からアクセス（新大阪から約40分）", "total_hint": "ドアツードア 約3.5〜4時間", "flight_price": "新幹線 ¥往復 約28,000／飛行機LCC ¥往復 約12,000〜大手 約34,000", "price_note": "国内・目安"}
+    },
+    {
+      "codes": ["SEL"], "city_ja": "ソウル", "country_ja": "韓国", "country_en": "South Korea", "travel_rank": 5,
+      "portal_url": "https://korea.hyrox.com/",
+      "travel": {"airport": "仁川(ICN)/金浦(GMP) 約2時間30分", "flight": "羽田/成田→ICN/GMP 約2.5時間", "access": "会場KINTEX（高陽市）へ 空港から約40〜60分", "total_hint": "ドアツードア 約5〜6時間", "flight_price": "¥往復 LCC 約15,000〜大手 約50,000", "price_note": "往復・目安（時期で変動）"}
+    },
+    {
+      "codes": ["TPE"], "city_ja": "台北", "country_ja": "台湾", "country_en": "Taiwan", "travel_rank": 6,
+      "portal_url": null,
+      "travel": {"airport": "桃園(TPE)/松山(TSA) 約4時間", "flight": "羽田/成田→TPE 約4時間", "access": "南港展覧館へ 桃園空港からMRT/バスで約50〜70分", "total_hint": "ドアツードア 約6〜7時間", "flight_price": "¥往復 LCC 約20,000〜大手 約60,000", "price_note": "往復・目安（時期で変動）"}
+    },
+    {
+      "codes": ["SHA", "PVG"], "city_ja": "上海", "country_ja": "中国", "country_en": "China", "travel_rank": 7,
+      "portal_url": null,
+      "travel": {"airport": "浦東(PVG)/虹橋(SHA) 約3時間", "flight": "成田/羽田→PVG 約3時間", "access": "市内会場へ 空港からリニア/地下鉄で約1時間", "total_hint": "ドアツードア 約5時間", "flight_price": "¥往復 LCC 約25,000〜大手 約60,000", "price_note": "往復・目安（別途ビザ要確認）"}
+    },
+    {
+      "codes": ["HKG"], "city_ja": "香港", "country_ja": "香港", "country_en": "Hong Kong", "travel_rank": 8,
+      "portal_url": null,
+      "travel": {"airport": "香港(HKG) 約5時間", "flight": "羽田/成田→HKG 約5時間", "access": "AsiaWorld-Expoは空港直結（約5分）", "total_hint": "ドアツードア 約5.5時間", "flight_price": "¥往復 LCC 約25,000〜大手 約70,000", "price_note": "往復・目安（時期で変動）"}
+    },
+    {
+      "codes": ["PEK", "PKX"], "city_ja": "北京", "country_ja": "中国", "country_en": "China", "travel_rank": 9,
+      "portal_url": null,
+      "travel": {"airport": "首都(PEK)/大興(PKX) 約4時間", "flight": "成田/羽田→PEK 約4時間", "access": "市内会場へ 空港から約1時間", "total_hint": "ドアツードア 約6時間", "flight_price": "¥往復 LCC 約25,000〜大手 約70,000", "price_note": "往復・目安（別途ビザ要確認）"}
+    },
+    {
+      "codes": ["HGH"], "city_ja": "杭州", "country_ja": "中国", "country_en": "China", "travel_rank": 10,
+      "portal_url": null,
+      "travel": {"airport": "杭州(HGH) 約3.5時間", "flight": "成田→HGH 約3.5時間", "access": "市内会場へ 空港から約1時間", "total_hint": "ドアツードア 約5.5時間", "flight_price": "¥往復 LCC 約28,000〜大手 約75,000", "price_note": "往復・目安（別途ビザ要確認）"}
+    },
+    {
+      "codes": ["SZX"], "city_ja": "深セン", "country_ja": "中国", "country_en": "China", "travel_rank": 11,
+      "portal_url": null,
+      "travel": {"airport": "深セン(SZX) 約5.5時間（香港経由も可）", "flight": "成田→SZX 約5.5時間", "access": "会場SWECEへ 空港から地下鉄で約1時間", "total_hint": "ドアツードア 約7時間", "flight_price": "¥往復 LCC 約30,000〜大手 約80,000", "price_note": "往復・目安（別途ビザ要確認）"}
+    },
+    {
+      "codes": ["CAN"], "city_ja": "広州", "country_ja": "中国", "country_en": "China", "travel_rank": 12,
+      "portal_url": null,
+      "travel": {"airport": "広州(CAN) 約5時間", "flight": "成田→CAN 約5時間", "access": "会場へ 空港から約1時間", "total_hint": "ドアツードア 約6.5時間", "flight_price": "¥往復 LCC 約30,000〜大手 約80,000", "price_note": "往復・目安（別途ビザ要確認）"}
+    },
+    {
+      "codes": ["BKK", "DMK"], "city_ja": "バンコク", "country_ja": "タイ", "country_en": "Thailand", "travel_rank": 13,
+      "portal_url": null,
+      "travel": {"airport": "スワンナプーム(BKK)/ドンムアン(DMK) 約6.5時間", "flight": "羽田/成田→BKK 約6.5時間", "access": "会場(BITEC/QSNCC)へ BTS/ARLで約45〜60分", "total_hint": "ドアツードア 約8時間", "flight_price": "¥往復 LCC 約25,000〜大手 約80,000", "price_note": "往復・目安（時期で変動）"}
+    },
+    {
+      "codes": ["SGP"], "city_ja": "シンガポール", "country_ja": "シンガポール", "country_en": "Singapore", "travel_rank": 14,
+      "portal_url": null,
+      "travel": {"airport": "チャンギ(SIN) 約7時間", "flight": "羽田/成田→SIN 約7時間", "access": "Singapore EXPOはチャンギ空港からMRTで約10分", "total_hint": "ドアツードア 約7.5〜8時間", "flight_price": "¥往復 LCC 約30,000〜大手 約90,000", "price_note": "往復・目安（時期で変動）"}
+    },
+    {
+      "codes": ["KUL"], "city_ja": "クアラルンプール", "country_ja": "マレーシア", "country_en": "Malaysia", "travel_rank": 15,
+      "portal_url": null,
+      "travel": {"airport": "クアラルンプール(KUL) 約7.5時間", "flight": "羽田/成田→KUL 約7.5時間", "access": "会場MITECへ 空港から約1時間", "total_hint": "ドアツードア 約9時間", "flight_price": "¥往復 LCC 約30,000〜大手 約90,000", "price_note": "往復・目安（時期で変動）"}
+    },
+    {
+      "codes": ["SYX"], "city_ja": "三亜（海南島）", "country_ja": "中国", "country_en": "China", "travel_rank": 16,
+      "portal_url": null,
+      "travel": {"airport": "三亜(SYX) 約6時間（乗継が多い）", "flight": "成田→SYX 約6時間〜（直行少・乗継）", "access": "会場へ 空港から約40分", "total_hint": "ドアツードア 約8〜10時間", "flight_price": "¥往復 LCC 約35,000〜大手 約100,000", "price_note": "往復・目安（乗継/ビザ要確認）"}
+    }
+  ]
+}

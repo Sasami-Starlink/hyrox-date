@@ -1,0 +1,13 @@
+{
+  "name": "HYROX ウォッチ｜開催・チケット追跡",
+  "short_name": "HYROX",
+  "description": "日本＋アジアの HYROX 開催とチケット販売開始を毎日チェックしてお知らせ。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
