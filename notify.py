@@ -244,8 +244,10 @@ def main():
         print('変更なし。通知しません。')
         return
 
+    # アプリURLは常に本文へ記載（環境変数 APP_URL があれば優先、無ければ公開URL）
+    app_url = os.environ.get('APP_URL') or 'https://sasami-starlink.github.io/hyrox-date/'
     subject = build_subject(new_events, sale_open, sale_date_set, mix_changes)
-    body = build_body(new_events, sale_open, sale_date_set, mix_changes, os.environ.get('APP_URL', ''))
+    body = build_body(new_events, sale_open, sale_date_set, mix_changes, app_url)
     print('=' * 48)
     print('件名:', subject)
     print('-' * 48)
