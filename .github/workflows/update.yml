@@ -50,7 +50,7 @@ jobs:
           MAIL_TO: ${{ secrets.MAIL_TO }}
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           APP_URL: ${{ vars.APP_URL }}
-        run: python3 notify.py prev_events.json events.json 2>&1 | tee notify_log.txt
+        run: python3 notify.py prev_events.json events.json
 
       - name: events.json の更新をコミット（失敗しても公開は続行）
         continue-on-error: true
@@ -71,7 +71,6 @@ jobs:
           rm -f prev_events.json
           mkdir -p _site
           cp *.html *.css *.js *.json *.webmanifest *.svg robots.txt _site/ 2>/dev/null || true
-          cp notify_log.txt _site/ 2>/dev/null || true
           touch _site/.nojekyll
           echo "=== _site 内容 ===" && ls -1 _site
 
