@@ -305,6 +305,11 @@ function setupLineBanner() {
   if (!b || !url) return;
   b.href = url;
   b.hidden = false;
+  // PWA(ホーム画面追加)でも確実にLINEを開くため、明示的に遷移させる
+  b.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = url;
+  });
 }
 
 document.getElementById('tabs').addEventListener('click', (e) => {

@@ -2,9 +2,9 @@
  * - events.json: network-first（常に最新の開催・販売状況を優先、オフライン時はキャッシュ）
  * - それ以外の静的ファイル: stale-while-revalidate
  *     （即表示＝キャッシュ、裏で最新取得＝次回反映。コード更新が確実に届く）*/
-const CACHE = 'hyrox-v2';
+const CACHE = 'hyrox-v3';
 const ASSETS = [
-  './', './index.html', './styles.css', './app.js',
+  './', './index.html', './styles.css', './app.js', './config.js',
   './manifest.webmanifest', './icon.svg',
 ];
 
