@@ -122,6 +122,12 @@ body {
 .sale-hi { color: var(--accent) !important; font-weight: 800; }
 .sale-tbd { color: var(--amber) !important; }
 .presale { color: #cda94a; font-size: 12.5px; }
+.mix { font-weight: 800; }
+.mix.mix-ok { color: var(--green); }
+.mix.mix-no { color: var(--red); }
+.mix.mix-unk { color: var(--muted); }
+.mix-check { color: var(--accent-dim); font-size: 12px; text-decoration: none; margin-left: 4px; }
+.mix-check:active { opacity: .7; }
 
 .section-h {
   display: flex; align-items: center; gap: 8px;

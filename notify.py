@@ -94,9 +94,12 @@ def fmt_presale(ev):
     return None
 
 
+MIX_LABEL = {'available': '在庫あり🟢', 'sold_out': '完売🔴', 'unknown': '要確認'}
+
+
 def diff(prev, curr):
     pmap = {e['id']: e for e in prev.get('events', [])}
-    new_events, sale_open, sale_date_set = [], [], []
+    new_events, sale_open, sale_date_set, mix_changes = [], [], [], []
     for e in curr.get('events', []):
         p = pmap.get(e['id'])
         if p is None:
@@ -110,10 +113,14 @@ def diff(prev, curr):
         changed_time = (e.get('sale_start_jst') and e.get('sale_start_jst') != p.get('sale_start_jst'))
         if (changed_date or changed_time) and e not in sale_open:
             sale_date_set.append(e)
-    return new_events, sale_open, sale_date_set
+        # MIXダブルス在庫の変化（在庫復活・完売など）。available/sold_out 間の変化を通知。
+        if e.get('mix_doubles') in ('available', 'sold_out') \
+                and e.get('mix_doubles') != p.get('mix_doubles') and e not in sale_open:
+            mix_changes.append(e)
+    return new_events, sale_open, sale_date_set, mix_changes
 
 
-def build_body(new_events, sale_open, sale_date_set, app_url):
+def build_body(new_events, sale_open, sale_date_set, mix_changes, app_url):
     lines = []
     if sale_open:
         lines.append('🎫 チケット販売が動きました')
@@ -132,6 +139,12 @@ def build_body(new_events, sale_open, sale_date_set, app_url):
             pre = fmt_presale(e)
             if pre:
                 lines.append(f"　　🏋 先行: {pre}")
+        lines.append('')
+    if mix_changes:
+        lines.append('👫 MIXダブルス（夫婦ペア）の在庫が変化しました')
+        for e in mix_changes:
+            lines.append(f"　・{e['city']}（{e['country']}） {fmt_date(e.get('event_start'))}")
+            lines.append(f"　　→ MIXダブルス: {MIX_LABEL.get(e.get('mix_doubles'), e.get('mix_doubles'))}")
         lines.append('')
     if new_events:
         lines.append('🆕 新しい開催が決まりました（行くか判断してね）')
@@ -153,10 +166,12 @@ def build_body(new_events, sale_open, sale_date_set, app_url):
     return '\n'.join(lines)
 
 
-def build_subject(new_events, sale_open, sale_date_set):
+def build_subject(new_events, sale_open, sale_date_set, mix_changes):
     parts = []
     if sale_open:
         parts.append(f"🎫販売{len(sale_open)}件")
+    if mix_changes:
+        parts.append(f"👫MIX{len(mix_changes)}件")
     if sale_date_set:
         parts.append(f"📅販売日{len(sale_date_set)}件")
     if new_events:
@@ -224,13 +239,13 @@ def main():
         print('前回データ無し（初回）。通知はスキップして基準を確定します。')
         return
 
-    new_events, sale_open, sale_date_set = diff(prev, curr)
-    if not (new_events or sale_open or sale_date_set):
+    new_events, sale_open, sale_date_set, mix_changes = diff(prev, curr)
+    if not (new_events or sale_open or sale_date_set or mix_changes):
         print('変更なし。通知しません。')
         return
 
-    subject = build_subject(new_events, sale_open, sale_date_set)
-    body = build_body(new_events, sale_open, sale_date_set, os.environ.get('APP_URL', ''))
+    subject = build_subject(new_events, sale_open, sale_date_set, mix_changes)
+    body = build_body(new_events, sale_open, sale_date_set, mix_changes, os.environ.get('APP_URL', ''))
     print('=' * 48)
     print('件名:', subject)
     print('-' * 48)

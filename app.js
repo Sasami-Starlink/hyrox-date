@@ -20,6 +20,19 @@ const STATUS_LABEL = {
 };
 
 const WEEKDAY = ['日', '月', '火', '水', '木', '金', '土'];
+// 端末のタイムゾーンに関係なく、常に日本時間(Asia/Tokyo)で日付要素を取り出す。
+const WD_EN2JP = { Sun: '日', Mon: '月', Tue: '火', Wed: '水', Thu: '木', Fri: '金', Sat: '土' };
+function jstFields(input) {
+  const d = (input instanceof Date) ? input : new Date(input);
+  if (isNaN(d)) return null;
+  const f = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tokyo', year: 'numeric', month: 'numeric', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: false, weekday: 'short',
+  });
+  const p = {};
+  for (const part of f.formatToParts(d)) p[part.type] = part.value;
+  return { y: +p.year, mo: +p.month, d: +p.day, hh: p.hour, mm: p.minute, wd: WD_EN2JP[p.weekday] };
+}
 
 let STATE = {
   events: [],
@@ -44,34 +57,44 @@ function el(tag, cls, html) {
 }
 function fmtDateRange(start, end) {
   if (!start) return '日程調整中';
-  const s = new Date(start + 'T00:00:00+09:00');
-  const label = (d) => `${d.getMonth() + 1}月${d.getDate()}日(${WEEKDAY[d.getDay()]})`;
-  if (!end || end === start) return `${s.getFullYear()}年 ${label(s)}`;
-  const e = new Date(end + 'T00:00:00+09:00');
-  return `${s.getFullYear()}年 ${label(s)}〜${label(e)}`;
+  const s = jstFields(start + 'T00:00:00+09:00');
+  const label = (f) => `${f.mo}月${f.d}日(${f.wd})`;
+  if (!end || end === start) return `${s.y}年 ${label(s)}`;
+  const e = jstFields(end + 'T00:00:00+09:00');
+  return `${s.y}年 ${label(s)}〜${label(e)}`;
+}
+function fmtJstDateTime(iso) {
+  const f = jstFields(iso);
+  if (!f) return '';
+  return `日本時間 ${f.mo}月${f.d}日(${f.wd}) ${f.hh}:${f.mm}`;
 }
 function fmtSale(ev) {
-  // 正確な日本時間が判明していれば最優先
-  if (ev.sale_start_jst) {
-    const d = new Date(ev.sale_start_jst);
-    const hh = String(d.getHours()).padStart(2, '0');
-    const mm = String(d.getMinutes()).padStart(2, '0');
-    return { text: `日本時間 ${d.getMonth() + 1}月${d.getDate()}日(${WEEKDAY[d.getDay()]}) ${hh}:${mm} 開始`, cls: 'sale-hi' };
+  if (ev.ticket_status === 'sold_out') return { text: '完売', cls: 'sale-tbd' };
+  // 未販売で正確な開始日時（JST）が判明 → 何日何時まで表示
+  if (ev.sale_start_jst && ev.ticket_status !== 'on_sale') {
+    return { text: `${fmtJstDateTime(ev.sale_start_jst)} 販売開始`, cls: 'sale-hi' };
+  }
+  if (ev.ticket_status === 'on_sale') {
+    const when = ev.sale_start_jst ? `（${fmtJstDateTime(ev.sale_start_jst)}〜）` : '';
+    return { text: `販売中${when}`, cls: 'sale-hi' };
   }
   if (ev.sale_date) {
-    const d = new Date(ev.sale_date + 'T00:00:00+09:00');
-    const future = d.getTime() > Date.now();
-    return {
-      text: `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日${future ? ' 販売予定' : ' 販売開始済み'}`,
-      cls: 'sale-hi',
-    };
+    const f = jstFields(ev.sale_date + 'T00:00:00+09:00');
+    return { text: `${f.y}年${f.mo}月${f.d}日 販売予定`, cls: 'sale-hi' };
   }
-  if (ev.ticket_status === 'on_sale') return { text: '販売中（詳細は公式へ）', cls: 'sale-hi' };
   return { text: '販売日 未定（決まり次第お知らせ）', cls: 'sale-tbd' };
 }
+// 👫 ミックスダブルス（夫婦ペア）の在庫
+function mixLabel(ev) {
+  const m = ev.mix_doubles;
+  if (!m) return null;                       // 未販売＝表示しない
+  if (m === 'available') return { text: '在庫あり', cls: 'mix-ok', icon: '🟢' };
+  if (m === 'sold_out') return { text: '完売', cls: 'mix-no', icon: '🔴' };
+  return { text: '要確認', cls: 'mix-unk', icon: '⚪️' };
+}
 function fmtDateShort(d) {
-  const dt = new Date(d + 'T00:00:00+09:00');
-  return `${dt.getMonth() + 1}/${dt.getDate()}`;
+  const f = jstFields(d + 'T00:00:00+09:00');
+  return `${f.mo}/${f.d}`;
 }
 // 提携ジム会員の先行（HYROX共通の特典＝一般販売の約24〜48時間前）。正確な先行日時が判明すれば最優先。
 // 資格は開催国側の提携ジム/コードに紐づく地域運用のため、日本大会と海外大会で注記を変える。
@@ -83,13 +106,11 @@ function presaleTail(ev) {
 function fmtPresale(ev) {
   if (['sold_out', 'past', 'closed'].includes(ev.ticket_status)) return null;
   if (ev.presale_jst) {
-    const d = new Date(ev.presale_jst);
-    const hh = String(d.getHours()).padStart(2, '0'), mm = String(d.getMinutes()).padStart(2, '0');
-    return `日本時間 ${d.getMonth() + 1}月${d.getDate()}日(${WEEKDAY[d.getDay()]}) ${hh}:${mm} 開始（提携ジム会員）・${presaleTail(ev)}`;
+    return `${fmtJstDateTime(ev.presale_jst)} 開始（提携ジム会員）・${presaleTail(ev)}`;
   }
   if (ev.sale_start_jst) {
-    const early = new Date(new Date(ev.sale_start_jst).getTime() - 48 * 3600 * 1000);
-    return `一般販売の約24〜48時間前（目安：日本時間 ${early.getMonth() + 1}月${early.getDate()}日頃〜）・${presaleTail(ev)}`;
+    const early = jstFields(new Date(new Date(ev.sale_start_jst).getTime() - 48 * 3600 * 1000));
+    return `一般販売の約24〜48時間前（目安：日本時間 ${early.mo}月${early.d}日頃〜）・${presaleTail(ev)}`;
   }
   if (ev.sale_date) {
     return `一般販売（${fmtDateShort(ev.sale_date)}）の約24〜48時間前・${presaleTail(ev)}`;
@@ -122,6 +143,11 @@ function cardEl(ev) {
   rows.appendChild(row('📅', fmtDateRange(ev.event_start, ev.event_end)));
   const sale = fmtSale(ev);
   rows.appendChild(row('🎫', `<span class="${sale.cls}">${sale.text}</span>`));
+  const mix = mixLabel(ev);
+  if (mix) {
+    const link = ev.detail_url ? ` <a class="mix-check" href="${escapeAttr(ev.detail_url)}" target="_blank" rel="noopener">確認›</a>` : '';
+    rows.appendChild(row('👫', `<span class="mix ${mix.cls}">MIXダブルス: ${mix.icon} ${mix.text}</span>${link}`));
+  }
   const pre = fmtPresale(ev);
   if (pre) rows.appendChild(row('🏋', `<span class="presale">先行: ${escapeHTML(pre)}</span>`));
   card.appendChild(rows);
@@ -218,8 +244,8 @@ function render() {
 function setText(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
 
 function todayStr() {
-  const t = new Date();
-  return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+  const f = jstFields(new Date());
+  return `${f.y}-${String(f.mo).padStart(2, '0')}-${String(f.d).padStart(2, '0')}`;
 }
 function sectionHeader(title, n) {
   return el('div', 'section-h', `${escapeHTML(title)}<span>${n}</span>`);
@@ -254,8 +280,8 @@ async function boot() {
     const data = await res.json();
     STATE.events = data.events || [];
     STATE.meta = data;
-    const upd = data.updated_at ? new Date(data.updated_at) : null;
-    const updTxt = upd ? `更新 ${upd.getMonth() + 1}/${upd.getDate()} ${String(upd.getHours()).padStart(2, '0')}:${String(upd.getMinutes()).padStart(2, '0')}` : '';
+    const uf = data.updated_at ? jstFields(data.updated_at) : null;
+    const updTxt = uf ? `更新 ${uf.mo}/${uf.d} ${uf.hh}:${uf.mm}` : '';
     setText('meta', `${data.scope || 'アジア'}・${STATE.events.length}大会　${updTxt}`);
   } catch (e) {
     setText('meta', 'データ取得に失敗しました');
@@ -268,9 +294,8 @@ async function boot() {
 
   // 既読カーソル更新（新着の判定は今回の描画で確定。次回以降のために今日へ進める）
   const maxSeen = STATE.events.reduce((m, e) => (e.first_seen && e.first_seen > m ? e.first_seen : m), STATE.lastSeen || '');
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  localStorage.setItem(LS_LASTSEEN, maxSeen > todayStr ? maxSeen : todayStr);
+  const today = todayStr();
+  localStorage.setItem(LS_LASTSEEN, maxSeen > today ? maxSeen : today);
 }
 
 // LINE友だち追加バナー（config.js に lineAddUrl を設定すると表示）

@@ -42,6 +42,9 @@ SLEEP = 0.6
 
 BASE = "https://www.roxradar.com"
 LIST_URL = BASE + "/"
+# RoxRadar の公開チケットステータスAPI（認証不要）。販売中/完売の大会について
+# 「カテゴリ別在庫（Doubles Mixed 含む）」と「正確な販売日時(UTC)」を返す。
+TICKETS_API = "https://tickets-api.roxradar.com/api/races/ticket-status"
 
 # 対象国（英語表記／RoxRadar の住所末尾でマッチ）。日本＋東・東南アジア。
 ALLOW_COUNTRIES = {
@@ -201,6 +204,64 @@ def parse_detail(html_text):
     return out
 
 
+# ----------------------------- チケットステータスAPI -----------------------------
+def norm_name(s):
+    """大会名を突き合わせ用に正規化（HYROX除去・記号除去・小文字化）"""
+    s = (s or "").lower().replace("hyrox", "")
+    s = re.sub(r"[^a-z0-9]+", " ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def mix_status(row):
+    """divisions から Doubles Mixed（ミックスダブルス）の在庫を判定"""
+    if row.get("is_sold_out"):
+        return "sold_out"
+    for d in row.get("divisions", []):
+        if norm_name(d.get("name")) in ("doubles mixed", "mixed doubles"):
+            return "available" if d.get("is_available") else "sold_out"
+    return "unknown"  # 該当カテゴリの記載なし（未提供 or 情報なし）
+
+
+def to_jst_iso(s):
+    """ISO(UTC) 文字列 → JST の ISO8601 文字列（分まで）。不可なら None"""
+    if not s:
+        return None
+    try:
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00")).astimezone(JST)
+        return dt.isoformat(timespec="minutes")
+    except Exception:
+        return None
+
+
+def fetch_ticket_status():
+    """全ページ取得し、正規化した大会名をキーにした辞書で返す。取得失敗時は空 dict。"""
+    by_name = {}
+    page = 1
+    while True:
+        raw = fetch(f"{TICKETS_API}?page={page}")
+        if not raw:
+            break
+        try:
+            d = json.loads(raw)
+        except Exception:
+            break
+        for row in d.get("data", []):
+            avail = [x["name"] for x in row.get("divisions", []) if x.get("is_available")]
+            by_name[norm_name(row.get("name"))] = {
+                "sale_start_jst": to_jst_iso(row.get("tickets_date")),
+                "second_sale_jst": to_jst_iso(row.get("second_tickets_date")),
+                "is_sold_out": bool(row.get("is_sold_out")),
+                "mix_doubles": mix_status(row),
+                "divisions_available": avail,
+                "timezone": row.get("timezone"),
+            }
+        meta = d.get("meta", {})
+        if page >= (meta.get("last_page") or 1):
+            break
+        page += 1
+    return by_name
+
+
 # ----------------------------- travel.json -----------------------------
 def load_travel():
     try:
@@ -233,6 +294,10 @@ def main():
     prev = {} if fresh else load_previous()
     travel_by_code = load_travel()
 
+    print("RoxRadar チケットステータスAPI を取得中 …（カテゴリ別在庫・正確な販売日時）")
+    ticket_status = fetch_ticket_status()
+    print(f"  チケット情報のある大会: {len(ticket_status)} 件")
+
     print("RoxRadar 一覧を取得中 …")
     list_html = fetch(LIST_URL)
     if not list_html:
@@ -260,6 +325,22 @@ def main():
         status_raw = detail["status_raw"] or e["status_raw"] or ""
         status = STATUS_MAP.get(status_raw.lower(), "announced")
 
+        # チケットAPI（あれば）で在庫・正確な販売日時を上書き
+        ts = ticket_status.get(norm_name(e["name"]))
+        mix_doubles = None
+        sale_start_jst = prev.get(e["slug"].split("/")[-1], {}).get("sale_start_jst")
+        second_sale_jst = None
+        divisions_available = None
+        if ts:
+            mix_doubles = ts["mix_doubles"]
+            sale_start_jst = ts["sale_start_jst"] or sale_start_jst
+            second_sale_jst = ts["second_sale_jst"]
+            divisions_available = ts["divisions_available"]
+            if ts["is_sold_out"]:
+                status = "sold_out"
+            elif status not in ("on_sale", "coming_soon"):
+                status = "on_sale"  # チケットAPIに載る＝販売系
+
         eid = e["slug"].split("/")[-1]
         first_seen = prev.get(eid, {}).get("first_seen") or today
 
@@ -280,8 +361,11 @@ def main():
             "lat": e["lat"] or detail["lat"],
             "lng": e["lng"] or detail["lng"],
             "ticket_status": status,
-            "sale_date": detail["sale_date"],          # YYYY-MM-DD（判明分）
-            "sale_start_jst": prev.get(eid, {}).get("sale_start_jst"),  # 正確な時刻が判明した場合に手当て
+            "sale_date": (sale_start_jst[:10] if sale_start_jst else detail["sale_date"]),  # YYYY-MM-DD
+            "sale_start_jst": sale_start_jst,          # 正確な販売開始日時(JST・ISO)。チケットAPI由来
+            "second_sale_jst": second_sale_jst,        # 2次販売（あれば）
+            "mix_doubles": mix_doubles,                # available | sold_out | unknown | None(未販売)
+            "divisions_available": divisions_available,  # 在庫のあるカテゴリ一覧（参考）
             "detail_url": e["detail_url"],
             "portal_url": tv.get("portal_url"),
             "first_seen": first_seen,

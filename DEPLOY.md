@@ -71,5 +71,8 @@ python3 -m http.server 8791 # http://localhost:8791/ をスマホ/PCで開く
 - **先行チケットの正確な日時が判明**したら、`events.json` 該当イベントに `presale_jst`（ISO8601）を入れると、目安ではなく確定表示になります（次回収集で保持）。
 
 ## データ源
-- 開催・日程・会場・ステータス・販売日：**RoxRadar**（全世界の HYROX を集約、サーバーレンダリングで機械可読）。
+- 開催・日程・会場・ステータス：**RoxRadar**（roxradar.com、全世界の HYROX を集約・サーバーレンダリング）。未販売の「開催決定」段階もここで検知。
+- 販売の正確な日時・**カテゴリ別在庫（👫MIXダブルス含む）**：**RoxRadar チケットAPI**（`tickets-api.roxradar.com/api/races/ticket-status`・認証不要）。`tickets_date`(UTC)→JST換算、`divisions[].is_available` で MIXダブルスの在庫を判定。ヘッドレスブラウザ不要。
 - 提携ジム先行：HYROX共通仕様（一般販売の約24〜48時間前）を自動算出。正確な日時・コードは各ジム配布のため要確認。
+
+> MIXダブルス在庫が変化（完売↔在庫あり）すると LINE 通知します。表示の「確認›」から公式ページで最終確認できます。
