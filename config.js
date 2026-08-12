@@ -5,5 +5,5 @@
  *   空文字のままなら、そのボタンは表示されません。
  */
 window.HYROX_CONFIG = {
-  lineAddUrl: ""
+  lineAddUrl: "https://line.me/R/ti/p/@192kvgku"
 };
