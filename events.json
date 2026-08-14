@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-14T03:09:40+09:00",
+  "updated_at": "2026-08-15T03:07:51+09:00",
   "source": "roxradar.com",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -441,15 +441,15 @@
       "city": "クアラルンプール",
       "country": "マレーシア",
       "region": "asia",
-      "event_start": "2026-12-11",
+      "event_start": "2026-12-10",
       "event_end": "2026-12-13",
       "venue": "Malaysia International Trade and Exhibition Centre (MITEC)",
       "lat": "3.17933",
       "lng": "101.66757",
-      "ticket_status": "on_sale",
+      "ticket_status": "coming_soon",
       "sale_date": "2026-07-23",
       "sale_start_jst": "2026-07-23T19:00+09:00",
-      "second_sale_jst": null,
+      "second_sale_jst": "2026-08-20T19:00+09:00",
       "mix_doubles": "sold_out",
       "divisions_available": [
         "Adaptive Women",
@@ -487,7 +487,9 @@
       "second_sale_jst": null,
       "mix_doubles": "sold_out",
       "divisions_available": [
+        "Women",
         "Doubles Women",
+        "Doubles PRO Women",
         "Relay Women",
         "Spectator"
       ],
