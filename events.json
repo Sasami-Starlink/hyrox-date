@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-16T13:52:15+09:00",
+  "updated_at": "2026-08-17T00:49:32+09:00",
   "source": "roxradar.com",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -283,11 +283,8 @@
       "sale_date": "2026-06-26",
       "sale_start_jst": "2026-06-26T13:00+09:00",
       "second_sale_jst": null,
-      "mix_doubles": "sold_out",
-      "divisions_available": [
-        "Relay Men",
-        "Spectator"
-      ],
+      "mix_doubles": null,
+      "divisions_available": null,
       "detail_url": "https://www.roxradar.com/events/hyrox-shenzhen-2026",
       "portal_url": null,
       "first_seen": "2026-08-12",
@@ -346,12 +343,12 @@
       "venue": "Queen Sirikit National Convention Center",
       "lat": "13.66983311",
       "lng": "100.6097774",
-      "ticket_status": "sold_out",
+      "ticket_status": "on_sale",
       "sale_date": "2026-04-30",
       "sale_start_jst": "2026-04-30T20:00+09:00",
-      "second_sale_jst": "2026-05-21T20:00+09:00",
-      "mix_doubles": "sold_out",
-      "divisions_available": [],
+      "second_sale_jst": null,
+      "mix_doubles": null,
+      "divisions_available": null,
       "detail_url": "https://www.roxradar.com/events/hyrox-bangkok-2026-s9",
       "portal_url": null,
       "first_seen": "2026-08-12",
@@ -487,9 +484,7 @@
       "second_sale_jst": null,
       "mix_doubles": "sold_out",
       "divisions_available": [
-        "Women",
         "Doubles Women",
-        "Doubles PRO Women",
         "Relay Women",
         "Spectator"
       ],
