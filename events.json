@@ -1,8 +1,8 @@
 {
-  "updated_at": "2026-08-17T14:11:35+09:00",
+  "updated_at": "2026-08-18T00:54:38+09:00",
   "source": "roxradar.com",
   "scope": "日本＋東・東南アジア",
-  "count": 15,
+  "count": 13,
   "events": [
     {
       "id": "hyrox-nagoya-2027",
@@ -268,38 +268,6 @@
       "desc": "HYROX Beijing 2027 – Race Guide, Hotels & Travel Tips"
     },
     {
-      "id": "hyrox-shenzhen-2026",
-      "code": "SZX",
-      "name": "HYROX Shenzhen 2026",
-      "city": "深セン",
-      "country": "中国",
-      "region": "asia",
-      "event_start": "2026-08-15",
-      "event_end": "2026-08-16",
-      "venue": "Shenzhen World Exhibition & Convention Center (SWECE)",
-      "lat": "22.7001",
-      "lng": "113.7696",
-      "ticket_status": "on_sale",
-      "sale_date": "2026-06-26",
-      "sale_start_jst": "2026-06-26T13:00+09:00",
-      "second_sale_jst": null,
-      "mix_doubles": null,
-      "divisions_available": null,
-      "detail_url": "https://www.roxradar.com/events/hyrox-shenzhen-2026",
-      "portal_url": null,
-      "first_seen": "2026-08-12",
-      "travel_rank": 11,
-      "travel": {
-        "airport": "深セン(SZX) 約5.5時間（香港経由も可）",
-        "flight": "成田→SZX 約5.5時間",
-        "access": "会場SWECEへ 空港から地下鉄で約1時間",
-        "total_hint": "ドアツードア 約7時間",
-        "flight_price": "¥往復 LCC 約30,000〜大手 約80,000",
-        "price_note": "往復・目安（別途ビザ要確認）"
-      },
-      "desc": "Plan HYROX Shenzhen 2026 with hotel picks, gyms and travel tips for race weekend in southern China."
-    },
-    {
       "id": "hyrox-guangzhou-2026",
       "code": "CAN",
       "name": "HYROX Guangzhou 2026",
@@ -330,38 +298,6 @@
         "price_note": "往復・目安（別途ビザ要確認）"
       },
       "desc": "Plan HYROX Guangzhou 2026 with tickets, hotels, gyms and travel tips for race weekend in one of China’s newest HYROX host cities."
-    },
-    {
-      "id": "hyrox-bangkok-2026-s9",
-      "code": "BKK",
-      "name": "HYROX Bangkok II 2026",
-      "city": "バンコク",
-      "country": "タイ",
-      "region": "asia",
-      "event_start": "2026-08-13",
-      "event_end": "2026-08-16",
-      "venue": "Queen Sirikit National Convention Center",
-      "lat": "13.66983311",
-      "lng": "100.6097774",
-      "ticket_status": "on_sale",
-      "sale_date": "2026-04-30",
-      "sale_start_jst": "2026-04-30T20:00+09:00",
-      "second_sale_jst": null,
-      "mix_doubles": null,
-      "divisions_available": null,
-      "detail_url": "https://www.roxradar.com/events/hyrox-bangkok-2026-s9",
-      "portal_url": null,
-      "first_seen": "2026-08-12",
-      "travel_rank": 13,
-      "travel": {
-        "airport": "スワンナプーム(BKK)/ドンムアン(DMK) 約6.5時間",
-        "flight": "羽田/成田→BKK 約6.5時間",
-        "access": "会場(BITEC/QSNCC)へ BTS/ARLで約45〜60分",
-        "total_hint": "ドアツードア 約8時間",
-        "flight_price": "¥往復 LCC 約25,000〜大手 約80,000",
-        "price_note": "往復・目安（時期で変動）"
-      },
-      "desc": "Don’t miss HYROX Bangkok II 2026, a fitness challenge blending endurance and functional training. Registration details and ticket info for HYROX Bangkok at Bangkok International Trade & Exhibition Centre."
     },
     {
       "id": "hyrox-bangkok-2027",
@@ -485,6 +421,7 @@
       "mix_doubles": "sold_out",
       "divisions_available": [
         "Doubles Women",
+        "Doubles PRO Women",
         "Relay Women",
         "Spectator"
       ],
