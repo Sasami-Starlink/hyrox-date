@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-18T00:54:38+09:00",
+  "updated_at": "2026-08-18T13:56:35+09:00",
   "source": "roxradar.com",
   "scope": "日本＋東・東南アジア",
   "count": 13,
@@ -421,7 +421,6 @@
       "mix_doubles": "sold_out",
       "divisions_available": [
         "Doubles Women",
-        "Doubles PRO Women",
         "Relay Women",
         "Spectator"
       ],
