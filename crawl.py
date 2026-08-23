@@ -1,32 +1,35 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HYROX 開催・チケット追跡アプリ用クローラー
+HYROX 開催・チケット追跡アプリ用クローラー（堅牢版）
 ------------------------------------------------------------
 アジア（日本＋東・東南アジア）の HYROX 開催情報とチケット状況を収集して
 events.json を生成/更新します。
 
 収集元:
-- RoxRadar (https://www.roxradar.com/) … 全世界の HYROX 開催を集約したサイト。
-  メイン一覧が完全サーバーレンダリングで、各カードに
-    data-start / data-end / data-region / data-status / data-hyrox-code / 位置
-  を持ち機械可読。詳細ページには JSON-LD(SportsEvent) と
-  「チケット販売日(ticket-details)」がある。
+- RoxRadar チケットAPI（公開・認証不要）:
+    https://tickets-api.roxradar.com/api/races/ticket-status?page=N
+  各レースの city / country / 日程 / 正確な販売日時(tickets_date, UTC) /
+  is_sold_out / カテゴリ別在庫(divisions … Doubles Mixed 含む) を返す。
+  ※このAPIは「販売中・完売の（＝チケット化された）レース」中心。
+   まだ販売前の“開催決定のみ”のレースは載らないことがある。
 
-方針:
-- Asia-Pacific のうち、対象国（日本・韓国・中国・香港・台湾・シンガポール・タイ 等）に絞る。
-- 表示は日本語。所要時間・フライト概算費用は travel.json（手動キュレーション）をマージ。
-- first_seen は既存 events.json から引き継ぎ（新規のみ本日日付）。これで「新着」判定が安定。
-- サイトに負荷をかけないよう 1件ごとに待機。個人利用を表明した User-Agent。
-- 標準ライブラリのみで動作。
+方針・堅牢性:
+- 上記APIを主軸に構築（サイトHTML構造の変更に強い）。
+- APIに載らない “開催決定のみ / 直近の過去” レースは、前回 events.json から持ち越し
+  （＝大阪2027・名古屋2027 のような未発表の日本大会や、ユーザーの判断メモを守る）。
+- **安全ガード**: 何らかの理由で最終的に 0 件になった場合は events.json を上書きせず、
+  既存データを保持して終了（サイトが空になる事故の再発防止）。
+- first_seen は前回から引き継ぎ（新着判定が安定）。id は API の slug（＝従来idと一致）。
+- 表示は日本語。所要時間・費用は travel.json（手動）をマージ。標準ライブラリのみ。
 
 使い方:
     python3 crawl.py            # 収集して events.json を更新
-    python3 crawl.py --fresh    # 既存 first_seen を無視して作り直し
+    python3 crawl.py --fresh    # 持ち越し無しで作り直し
 """
 
 import urllib.request, urllib.error
-import socket, re, json, html, time, gzip, io, sys, os
+import socket, re, json, time, gzip, io, sys, os
 from datetime import datetime, date, timezone, timedelta
 
 socket.setdefaulttimeout(20)
@@ -38,41 +41,31 @@ JST = timezone(timedelta(hours=9))
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36 "
                     "hyrox-tracker-personal (non-commercial)"}
-SLEEP = 0.6
 
-BASE = "https://www.roxradar.com"
-LIST_URL = BASE + "/"
-# RoxRadar の公開チケットステータスAPI（認証不要）。販売中/完売の大会について
-# 「カテゴリ別在庫（Doubles Mixed 含む）」と「正確な販売日時(UTC)」を返す。
 TICKETS_API = "https://tickets-api.roxradar.com/api/races/ticket-status"
+STATUS_PAGE = "https://alerts.roxradar.com/hyrox-ticket-status"  # 「確認」リンク先（カテゴリ別在庫の一覧）
 
-# 対象国（英語表記／RoxRadar の住所末尾でマッチ）。日本＋東・東南アジア。
-ALLOW_COUNTRIES = {
-    "Japan": "日本",
-    "South Korea": "韓国", "Korea": "韓国",
-    "China": "中国",
-    "Hong Kong": "香港", "Hong Kong SAR": "香港",
-    "Taiwan": "台湾",
-    "Singapore": "シンガポール",
-    "Thailand": "タイ",
-    "Malaysia": "マレーシア",
-    "Vietnam": "ベトナム",
-    "Philippines": "フィリピン",
-    "Indonesia": "インドネシア",
-    "Macau": "マカオ", "Macao": "マカオ",
+# 対象国（ISOコード）。日本＋東・東南アジア。
+COUNTRY_JA = {
+    "JP": "日本", "KR": "韓国", "CN": "中国", "HK": "香港", "TW": "台湾",
+    "SG": "シンガポール", "TH": "タイ", "MY": "マレーシア", "VN": "ベトナム",
+    "PH": "フィリピン", "ID": "インドネシア", "MO": "マカオ",
+}
+ASIA_CODES = set(COUNTRY_JA.keys())
+
+# 都市名(英, 小文字) → travel.json の都市コード
+CITY_CODE = {
+    "osaka": "OSA", "nagoya": "NGO", "tokyo": "TYO", "chiba": "CHB", "yokohama": "YOK",
+    "seoul": "SEL", "bangkok": "BKK", "singapore": "SGP", "shenzhen": "SZX",
+    "beijing": "PEK", "guangzhou": "CAN", "sanya": "SYX", "kuala lumpur": "KUL",
+    "taipei": "TPE", "hong kong": "HKG", "shanghai": "SHA", "hangzhou": "HGH",
+    "macau": "MAC", "macao": "MAC",
 }
 
-STATUS_MAP = {
-    "on sale": "on_sale",
-    "coming soon": "coming_soon",
-    "not yet announced": "announced",
-    "sold out": "sold_out",
-    "registration closed": "closed",
-    "past event": "past",
-}
+# 古すぎる過去大会は持ち越さない（肥大化防止）
+KEEP_PAST_DAYS = 400
 
 
-# ----------------------------- HTTP -----------------------------
 def fetch(url, tries=3):
     for i in range(tries):
         try:
@@ -90,140 +83,12 @@ def fetch(url, tries=3):
     return ""
 
 
-# ----------------------------- パース補助 -----------------------------
-def attr(block, name):
-    m = re.search(r'%s="([^"]*)"' % re.escape(name), block)
-    return html.unescape(m.group(1)).strip() if m else ""
-
-
-def clean(s):
-    return html.unescape(re.sub(r"\s+", " ", s or "")).strip()
-
-
-def parse_date(s):
-    """'January 21, 2027' / 'Jan 21, 2027' / '21 Jan 2027' → 'YYYY-MM-DD'（不明はNone）"""
-    s = clean(s)
-    if not s:
-        return None
-    for fmt in ("%B %d, %Y", "%b %d, %Y", "%d %b %Y", "%d %B %Y", "%B %d %Y"):
-        try:
-            return datetime.strptime(s, fmt).date().isoformat()
-        except ValueError:
-            continue
-    return None
-
-
-def country_from_address(street):
-    """住所末尾から国名を推定 → (country_en, country_ja) or (None, None)"""
-    if not street:
-        return None, None
-    tail = clean(street).split(",")[-1].strip()
-    for en, ja in ALLOW_COUNTRIES.items():
-        if en.lower() == tail.lower() or en.lower() in tail.lower():
-            return en, ja
-    return tail or None, None
-
-
-# ----------------------------- 一覧の収集 -----------------------------
-def parse_list(html_text):
-    """RoxRadar トップの map-item ブロックを解析して基本情報リストを返す"""
-    events = []
-    # 各イベントは <div ... class="map-item"> で始まる。次の map-item まで（末尾は</body>）。
-    blocks = re.split(r'(?=<div[^>]*class="map-item")', html_text)
-    for blk in blocks:
-        if 'class="map-item"' not in blk:
-            continue
-        region = attr(blk, "data-region")
-        if "Asia" not in region:
-            continue
-        code = attr(blk, "data-hyrox-code")
-        start = parse_date(attr(blk, "data-start"))
-        end = parse_date(attr(blk, "data-end"))
-        lat = attr(blk, "data-lat")
-        lng = attr(blk, "data-lng")
-        status_raw = attr(blk, "data-status")
-        # スラッグ（詳細ページ）
-        mslug = re.search(r'href="(/events/[^"#?]+)"', blk)
-        slug = mslug.group(1).rstrip("/") if mslug else ""
-        # フルネーム（例: HYROX Osaka 2027）
-        mname = re.search(r'class="event_name">([^<]+)</div>', blk)
-        if mname:
-            name = clean(mname.group(1))
-        else:
-            m2 = re.search(r'class="event-name-wrap"><div>HYROX</div><div>([^<]+)</div>', blk)
-            name = "HYROX " + clean(m2.group(1)) if m2 else (code or slug)
-        if not slug:
-            continue
-        events.append({
-            "slug": slug, "code": code, "name": name,
-            "event_start": start, "event_end": end,
-            "lat": lat, "lng": lng,
-            "status_raw": status_raw,
-            "detail_url": BASE + slug,
-        })
-    # スラッグ重複除去（同一イベントが地図と一覧で二重に出る場合）
-    uniq = {}
-    for e in events:
-        uniq[e["slug"]] = e
-    return list(uniq.values())
-
-
-# ----------------------------- 詳細ページの収集 -----------------------------
-def parse_detail(html_text):
-    """JSON-LD と ticket-details から会場・国・販売日・ステータスを抽出"""
-    out = {"venue": None, "country_en": None, "country_ja": None,
-           "sale_date": None, "status_raw": None, "desc": None,
-           "lat": None, "lng": None}
-    # JSON-LD
-    for m in re.finditer(r'<script type="application/ld\+json">(.*?)</script>', html_text, re.S):
-        try:
-            d = json.loads(m.group(1))
-        except Exception:
-            continue
-        if not isinstance(d, dict):
-            continue
-        if d.get("@type") in ("SportsEvent", "Event"):
-            loc = d.get("location") or {}
-            out["venue"] = clean(loc.get("name")) or out["venue"]
-            addr = (loc.get("address") or {})
-            en, ja = country_from_address(addr.get("streetAddress") or addr.get("addressRegion") or "")
-            out["country_en"], out["country_ja"] = en, ja
-            geo = loc.get("geo") or {}
-            out["lat"] = str(geo.get("latitude") or "") or out["lat"]
-            out["lng"] = str(geo.get("longitude") or "") or out["lng"]
-            out["desc"] = clean(d.get("description"))
-            break
-    # ステータス（詳細ページ）
-    ms = re.search(r'class="event-status"[^>]*>([^<]+)</div>', html_text)
-    if ms:
-        out["status_raw"] = clean(ms.group(1))
-    # チケット販売日
-    mt = re.search(r'class="ticket-details">([^<]+)</div>', html_text)
-    if mt:
-        out["sale_date"] = parse_date(mt.group(1))
-    return out
-
-
-# ----------------------------- チケットステータスAPI -----------------------------
 def norm_name(s):
-    """大会名を突き合わせ用に正規化（HYROX除去・記号除去・小文字化）"""
-    s = (s or "").lower().replace("hyrox", "")
-    s = re.sub(r"[^a-z0-9]+", " ", s)
-    return re.sub(r"\s+", " ", s).strip()
-
-
-def mix_status(row):
-    """divisions から Doubles Mixed（ミックスダブルス）の在庫を判定"""
-    if row.get("is_sold_out"):
-        return "sold_out"
-    for d in row.get("divisions", []):
-        if norm_name(d.get("name")) in ("doubles mixed", "mixed doubles"):
-            return "available" if d.get("is_available") else "sold_out"
-    return "unknown"  # 該当カテゴリの記載なし（未提供 or 情報なし）
+    return re.sub(r"\s+", " ", (s or "").strip().lower())
 
 
 def to_jst_iso(s):
-    """ISO(UTC) 文字列 → JST の ISO8601 文字列（分まで）。不可なら None"""
+    """ISO(UTC) 文字列 → JST の ISO8601（分まで）。不可なら None"""
     if not s:
         return None
     try:
@@ -233,41 +98,20 @@ def to_jst_iso(s):
         return None
 
 
-def fetch_ticket_status():
-    """全ページ取得し、正規化した大会名をキーにした辞書で返す。取得失敗時は空 dict。"""
-    by_name = {}
-    page = 1
-    while True:
-        raw = fetch(f"{TICKETS_API}?page={page}")
-        if not raw:
-            break
-        try:
-            d = json.loads(raw)
-        except Exception:
-            break
-        for row in d.get("data", []):
-            avail = [x["name"] for x in row.get("divisions", []) if x.get("is_available")]
-            by_name[norm_name(row.get("name"))] = {
-                "sale_start_jst": to_jst_iso(row.get("tickets_date")),
-                "second_sale_jst": to_jst_iso(row.get("second_tickets_date")),
-                "is_sold_out": bool(row.get("is_sold_out")),
-                "mix_doubles": mix_status(row),
-                "divisions_available": avail,
-                "timezone": row.get("timezone"),
-            }
-        meta = d.get("meta", {})
-        if page >= (meta.get("last_page") or 1):
-            break
-        page += 1
-    return by_name
+def mix_status(row):
+    """divisions から Doubles Mixed（ミックスダブルス）の在庫を判定"""
+    if row.get("is_sold_out"):
+        return "sold_out"
+    for d in row.get("divisions", []):
+        if norm_name(d.get("name")) in ("doubles mixed", "mixed doubles"):
+            return "available" if d.get("is_available") else "sold_out"
+    return "unknown"
 
 
-# ----------------------------- travel.json -----------------------------
 def load_travel():
     try:
         with open(TRAVEL, encoding="utf-8") as f:
             data = json.load(f)
-        # code をキーにした辞書へ正規化
         by_code = {}
         for row in data.get("cities", []):
             for key in row.get("codes", []):
@@ -278,7 +122,6 @@ def load_travel():
         return {}
 
 
-# ----------------------------- メイン -----------------------------
 def load_previous():
     try:
         with open(OUT, encoding="utf-8") as f:
@@ -288,98 +131,122 @@ def load_previous():
         return {}
 
 
+def fetch_ticket_races():
+    """チケットAPIを全ページ取得して行リストで返す。失敗時は None（＝上書きしない合図）。"""
+    rows = []
+    page = 1
+    while True:
+        raw = fetch(f"{TICKETS_API}?page={page}")
+        if not raw:
+            return None if not rows else rows
+        try:
+            d = json.loads(raw)
+        except Exception:
+            return None if not rows else rows
+        rows.extend(d.get("data", []))
+        meta = d.get("meta", {})
+        if page >= (meta.get("last_page") or 1):
+            break
+        page += 1
+    return rows
+
+
+def build_event(row, prev, travel_by_code, today):
+    eid = row.get("slug")
+    city_en = (row.get("city") or "").strip()
+    code = CITY_CODE.get(city_en.lower())
+    tv = travel_by_code.get(code, {}) if code else {}
+    p = prev.get(eid, {})
+
+    event_start = (row.get("start_date") or "")[:10] or None
+    event_end = (row.get("end_date") or "")[:10] or None
+    sale_start_jst = to_jst_iso(row.get("tickets_date"))
+    second_sale_jst = to_jst_iso(row.get("second_tickets_date"))
+
+    if row.get("is_sold_out"):
+        status = "sold_out"
+    else:
+        status = "on_sale"
+    if event_end and event_end < today:
+        status = "past"
+
+    return {
+        "id": eid,
+        "code": code or "",
+        "name": row.get("name"),
+        "city": tv.get("city_ja") or city_en,
+        "country": COUNTRY_JA.get(row.get("country")) or row.get("country_full") or "アジア",
+        "region": "asia",
+        "event_start": event_start,
+        "event_end": event_end,
+        "venue": p.get("venue"),  # APIに会場は無いので、以前取得済みなら維持
+        "ticket_status": status,
+        "sale_date": (sale_start_jst[:10] if sale_start_jst else p.get("sale_date")),
+        "sale_start_jst": sale_start_jst or p.get("sale_start_jst"),
+        "second_sale_jst": second_sale_jst,
+        "mix_doubles": mix_status(row),
+        "divisions_available": [x["name"] for x in row.get("divisions", []) if x.get("is_available")],
+        "detail_url": STATUS_PAGE,
+        "portal_url": tv.get("portal_url"),
+        "first_seen": p.get("first_seen") or today,
+        "travel_rank": tv.get("travel_rank", 900),
+        "travel": tv.get("travel"),
+        "presale_jst": p.get("presale_jst"),
+    }
+
+
 def main():
     fresh = "--fresh" in sys.argv
     today = date.today().isoformat()
+    cutoff = (date.today() - timedelta(days=KEEP_PAST_DAYS)).isoformat()
     prev = {} if fresh else load_previous()
     travel_by_code = load_travel()
 
-    print("RoxRadar チケットステータスAPI を取得中 …（カテゴリ別在庫・正確な販売日時）")
-    ticket_status = fetch_ticket_status()
-    print(f"  チケット情報のある大会: {len(ticket_status)} 件")
+    print("RoxRadar チケットAPI を取得中 …（カテゴリ別在庫・正確な販売日時）")
+    rows = fetch_ticket_races()
+    if rows is None:
+        print("APIの取得に失敗しました。既存 events.json を保持して終了します。", file=sys.stderr)
+        return  # 上書きしない（サイトは既存データのまま）
+    print(f"  取得レース総数: {len(rows)}")
 
-    print("RoxRadar 一覧を取得中 …")
-    list_html = fetch(LIST_URL)
-    if not list_html:
-        print("一覧取得に失敗しました。既存 events.json を保持します。", file=sys.stderr)
-        sys.exit(1)
-    listed = parse_list(list_html)
-    print(f"  Asia-Pacific イベント候補: {len(listed)} 件")
+    built = {}
+    for row in rows:
+        if row.get("country") not in ASIA_CODES:
+            continue
+        if not row.get("slug"):
+            continue
+        ev = build_event(row, prev, travel_by_code, today)
+        built[ev["id"]] = ev
+    print(f"  アジア対象（API由来）: {len(built)} 件")
 
-    events = []
-    for e in listed:
-        time.sleep(SLEEP)
-        detail = parse_detail(fetch(e["detail_url"]))
+    # APIに載らない前回イベントを持ち越し（未発表の開催決定・直近の過去。ユーザーの判断メモ保護）
+    carried = 0
+    if not fresh:
+        for eid, pe in prev.items():
+            if eid in built:
+                continue
+            ee = pe.get("event_end") or pe.get("event_start") or ""
+            if ee and ee < cutoff:
+                continue  # 古すぎる過去は捨てる
+            pe = dict(pe)
+            if ee and ee < today and pe.get("ticket_status") not in ("past",):
+                pe["ticket_status"] = "past"
+            built[eid] = pe
+            carried += 1
+    print(f"  前回からの持ち越し: {carried} 件")
 
-        country_en = detail["country_en"]
-        country_ja = detail["country_ja"]
-        # 対象国フィルタ（住所から国が取れない場合は travel.json のコード有無で救済）
-        code = (e["code"] or "").upper()
-        tv = travel_by_code.get(code, {})
-        if not country_ja:
-            country_ja = tv.get("country_ja")
-            country_en = country_en or tv.get("country_en")
-        if country_en not in ALLOW_COUNTRIES and code not in travel_by_code:
-            continue  # 対象国外（豪州・インド 等）
+    events = list(built.values())
 
-        status_raw = detail["status_raw"] or e["status_raw"] or ""
-        status = STATUS_MAP.get(status_raw.lower(), "announced")
+    # 安全ガード: 0件なら絶対に上書きしない（空サイト事故の再発防止）
+    if not events:
+        print("最終的に 0 件のため、events.json は更新しません（既存データを保持）。", file=sys.stderr)
+        return
 
-        # チケットAPI（あれば）で在庫・正確な販売日時を上書き
-        ts = ticket_status.get(norm_name(e["name"]))
-        mix_doubles = None
-        sale_start_jst = prev.get(e["slug"].split("/")[-1], {}).get("sale_start_jst")
-        second_sale_jst = None
-        divisions_available = None
-        if ts:
-            mix_doubles = ts["mix_doubles"]
-            sale_start_jst = ts["sale_start_jst"] or sale_start_jst
-            second_sale_jst = ts["second_sale_jst"]
-            divisions_available = ts["divisions_available"]
-            if ts["is_sold_out"]:
-                status = "sold_out"
-            elif status not in ("on_sale", "coming_soon"):
-                status = "on_sale"  # チケットAPIに載る＝販売系
-
-        eid = e["slug"].split("/")[-1]
-        first_seen = prev.get(eid, {}).get("first_seen") or today
-
-        city_ja = tv.get("city_ja")
-        travel = tv.get("travel")  # dict or None
-        travel_rank = tv.get("travel_rank", 900)
-
-        events.append({
-            "id": eid,
-            "code": code,
-            "name": e["name"],
-            "city": city_ja or clean(e["name"].replace("HYROX", "")).rsplit(" ", 1)[0].strip(),
-            "country": country_ja or country_en or "アジア",
-            "region": "asia",
-            "event_start": e["event_start"],
-            "event_end": e["event_end"],
-            "venue": detail["venue"],
-            "lat": e["lat"] or detail["lat"],
-            "lng": e["lng"] or detail["lng"],
-            "ticket_status": status,
-            "sale_date": (sale_start_jst[:10] if sale_start_jst else detail["sale_date"]),  # YYYY-MM-DD
-            "sale_start_jst": sale_start_jst,          # 正確な販売開始日時(JST・ISO)。チケットAPI由来
-            "second_sale_jst": second_sale_jst,        # 2次販売（あれば）
-            "mix_doubles": mix_doubles,                # available | sold_out | unknown | None(未販売)
-            "divisions_available": divisions_available,  # 在庫のあるカテゴリ一覧（参考）
-            "detail_url": e["detail_url"],
-            "portal_url": tv.get("portal_url"),
-            "first_seen": first_seen,
-            "travel_rank": travel_rank,
-            "travel": travel,
-            "desc": detail["desc"],
-        })
-
-    # 並び順: 行きやすさ(travel_rank) → 開催日
-    events.sort(key=lambda x: (x["travel_rank"], x["event_start"] or "9999"))
+    events.sort(key=lambda x: (x.get("travel_rank", 900), x.get("event_start") or "9999"))
 
     payload = {
         "updated_at": datetime.now(JST).isoformat(timespec="seconds"),
-        "source": "roxradar.com",
+        "source": "roxradar tickets-api",
         "scope": "日本＋東・東南アジア",
         "count": len(events),
         "events": events,
@@ -387,10 +254,8 @@ def main():
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
     print(f"✓ events.json を書き出しました（{len(events)} 件）")
-    # サマリ
     from collections import Counter
-    c = Counter(e["ticket_status"] for e in events)
-    print("  ステータス内訳:", dict(c))
+    print("  ステータス内訳:", dict(Counter(e["ticket_status"] for e in events)))
 
 
 if __name__ == "__main__":
