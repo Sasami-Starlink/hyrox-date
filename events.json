@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-26T14:03:11+09:00",
+  "updated_at": "2026-08-28T10:01:56+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -84,7 +84,6 @@
       "second_sale_jst": "2026-07-24T18:00+09:00",
       "mix_doubles": "sold_out",
       "divisions_available": [
-        "Doubles Women",
         "Adaptive Men",
         "Adaptive Women",
         "Spectator"
@@ -177,15 +176,21 @@
       "event_start": "2027-01-07",
       "event_end": "2027-01-10",
       "venue": "Asiaworld-Expo",
-      "lat": "22.32154157",
-      "lng": "113.9433109",
-      "ticket_status": "announced",
-      "sale_date": null,
-      "sale_start_jst": null,
+      "ticket_status": "on_sale",
+      "sale_date": "2026-08-27",
+      "sale_start_jst": "2026-08-27T19:00+09:00",
       "second_sale_jst": null,
-      "mix_doubles": null,
-      "divisions_available": null,
-      "detail_url": "https://www.roxradar.com/events/hyrox-hong-kong-2027",
+      "mix_doubles": "available",
+      "divisions_available": [
+        "PRO Women",
+        "Doubles Women",
+        "Doubles Mixed",
+        "Doubles PRO Women",
+        "Adaptive Men",
+        "Adaptive Women",
+        "Spectator"
+      ],
+      "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
       "portal_url": null,
       "first_seen": "2026-08-12",
       "travel_rank": 8,
@@ -197,7 +202,7 @@
         "flight_price": "¥往復 LCC 約25,000〜大手 約70,000",
         "price_note": "往復・目安（時期で変動）"
       },
-      "desc": "Get ready for HYROX Hong Kong 2027, where endurance and strength meet in Asia’s premier race. Find ticket info and event details for HYROX Hong Kong at AsiaWorld-Expo."
+      "presale_jst": null
     },
     {
       "id": "hyrox-beijing-2026-s9",
@@ -212,7 +217,7 @@
       "ticket_status": "on_sale",
       "sale_date": "2026-07-23",
       "sale_start_jst": "2026-07-23T13:00+09:00",
-      "second_sale_jst": null,
+      "second_sale_jst": "2026-08-28T13:00+09:00",
       "mix_doubles": "available",
       "divisions_available": [
         "Men",
@@ -485,6 +490,7 @@
       "second_sale_jst": null,
       "mix_doubles": "sold_out",
       "divisions_available": [
+        "Doubles Women",
         "Spectator"
       ],
       "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
