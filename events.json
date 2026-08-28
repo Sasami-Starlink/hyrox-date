@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-28T10:01:56+09:00",
+  "updated_at": "2026-08-29T06:13:11+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -182,6 +182,7 @@
       "second_sale_jst": null,
       "mix_doubles": "available",
       "divisions_available": [
+        "Women",
         "PRO Women",
         "Doubles Women",
         "Doubles Mixed",
