@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-01T12:06:46+09:00",
+  "updated_at": "2026-09-02T00:24:20+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -185,7 +185,6 @@
         "PRO Women",
         "Doubles Women",
         "Doubles Mixed",
-        "Doubles PRO Women",
         "Adaptive Men",
         "Adaptive Women",
         "Spectator"
@@ -225,6 +224,7 @@
         "Doubles Men",
         "Doubles Women",
         "Doubles Mixed",
+        "Relay Men",
         "Spectator"
       ],
       "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
