@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-03T14:23:49+09:00",
+  "updated_at": "2026-09-04T03:29:14+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -180,11 +180,10 @@
       "sale_date": "2026-08-27",
       "sale_start_jst": "2026-08-27T19:00+09:00",
       "second_sale_jst": null,
-      "mix_doubles": "available",
+      "mix_doubles": "sold_out",
       "divisions_available": [
         "PRO Women",
         "Doubles Women",
-        "Doubles Mixed",
         "Adaptive Men",
         "Adaptive Women",
         "Spectator"
@@ -225,7 +224,6 @@
         "Doubles Women",
         "Doubles Mixed",
         "Relay Men",
-        "Relay Mixed",
         "Spectator"
       ],
       "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
