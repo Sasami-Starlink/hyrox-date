@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-14T03:03:39+09:00",
+  "updated_at": "2026-09-14T17:26:34+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -181,7 +181,7 @@
       "ticket_status": "on_sale",
       "sale_date": "2026-08-27",
       "sale_start_jst": "2026-08-27T19:00+09:00",
-      "second_sale_jst": null,
+      "second_sale_jst": "2026-09-14T19:00+09:00",
       "mix_doubles": "sold_out",
       "divisions_available": [
         "Doubles Women",
@@ -213,7 +213,7 @@
       "event_start": "2026-09-12",
       "event_end": "2026-09-13",
       "venue": "China National Convention Center Phase II (CNCC II)",
-      "ticket_status": "on_sale",
+      "ticket_status": "past",
       "sale_date": "2026-07-23",
       "sale_start_jst": "2026-07-23T13:00+09:00",
       "second_sale_jst": "2026-08-28T13:00+09:00",
