@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-22T17:08:23+09:00",
+  "updated_at": "2026-09-23T03:43:21+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -84,9 +84,8 @@
       "sale_date": "2026-05-28",
       "sale_start_jst": "2026-05-28T18:00+09:00",
       "second_sale_jst": "2026-07-24T18:00+09:00",
-      "mix_doubles": "available",
+      "mix_doubles": "sold_out",
       "divisions_available": [
-        "Doubles Mixed",
         "Adaptive Men",
         "Adaptive Women",
         "Spectator"
@@ -147,14 +146,12 @@
       "event_start": "2026-10-31",
       "event_end": "2026-11-01",
       "venue": "Shanghai World Expo Exhibition and Convention Center",
-      "ticket_status": "on_sale",
+      "ticket_status": "sold_out",
       "sale_date": "2026-09-03",
       "sale_start_jst": "2026-09-03T13:00+09:00",
       "second_sale_jst": null,
       "mix_doubles": "sold_out",
-      "divisions_available": [
-        "Spectator"
-      ],
+      "divisions_available": [],
       "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
       "portal_url": null,
       "first_seen": "2026-08-12",
@@ -187,7 +184,6 @@
       "divisions_available": [
         "Women",
         "PRO Women",
-        "Doubles Men",
         "Doubles Women",
         "Doubles Mixed",
         "Doubles PRO Women",
@@ -458,16 +454,11 @@
       "second_sale_jst": "2026-08-20T19:00+09:00",
       "mix_doubles": "available",
       "divisions_available": [
-        "Men",
-        "Women",
-        "PRO Men",
         "PRO Women",
         "Doubles Men",
         "Doubles Women",
         "Doubles Mixed",
-        "Doubles PRO Men",
         "Doubles PRO Women",
-        "Relay Mixed",
         "Adaptive Men",
         "Adaptive Women",
         "Spectator"
