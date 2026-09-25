@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-25T17:26:30+09:00",
+  "updated_at": "2026-09-26T04:12:15+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -420,6 +420,7 @@
       "second_sale_jst": "2026-06-26T19:00+09:00",
       "mix_doubles": "sold_out",
       "divisions_available": [
+        "Women",
         "Adaptive Men",
         "Adaptive Women",
         "Spectator"
