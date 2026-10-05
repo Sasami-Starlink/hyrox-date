@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-05T18:53:44+09:00",
+  "updated_at": "2026-10-06T06:56:51+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -500,8 +500,6 @@
       "second_sale_jst": null,
       "mix_doubles": "sold_out",
       "divisions_available": [
-        "Men",
-        "Doubles Men",
         "Doubles PRO Women",
         "Spectator"
       ],
