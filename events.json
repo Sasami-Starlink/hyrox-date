@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-13T18:57:31+09:00",
+  "updated_at": "2026-10-14T05:35:13+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 15,
@@ -509,7 +509,6 @@
       "mix_doubles": "sold_out",
       "divisions_available": [
         "Doubles Women",
-        "Doubles PRO Men",
         "Spectator"
       ],
       "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
