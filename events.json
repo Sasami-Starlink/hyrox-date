@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-18T02:49:33+09:00",
+  "updated_at": "2026-10-18T16:40:02+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 16,
@@ -438,7 +438,6 @@
       "second_sale_jst": "2026-06-26T19:00+09:00",
       "mix_doubles": "available",
       "divisions_available": [
-        "Doubles Women",
         "Doubles Mixed",
         "Relay Men",
         "Relay Women",
