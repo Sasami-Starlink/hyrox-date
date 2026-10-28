@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-28T18:12:25+09:00",
+  "updated_at": "2026-10-29T05:11:13+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 16,
@@ -509,6 +509,7 @@
         "Women",
         "PRO Women",
         "Doubles Women",
+        "Doubles PRO Men",
         "Doubles PRO Women",
         "Spectator"
       ],
