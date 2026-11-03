@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-03T08:03:54+09:00",
+  "updated_at": "2026-11-03T19:22:52+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 16,
@@ -89,10 +89,9 @@
       "sale_date": "2026-05-28",
       "sale_start_jst": "2026-05-28T18:00+09:00",
       "second_sale_jst": "2026-07-24T18:00+09:00",
-      "mix_doubles": "available",
+      "mix_doubles": "sold_out",
       "divisions_available": [
         "Doubles Women",
-        "Doubles Mixed",
         "Spectator"
       ],
       "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
@@ -125,6 +124,7 @@
       "second_sale_jst": null,
       "mix_doubles": "sold_out",
       "divisions_available": [
+        "Doubles PRO Men",
         "Doubles PRO Women",
         "Spectator"
       ],
@@ -189,9 +189,10 @@
       "sale_date": "2026-08-27",
       "sale_start_jst": "2026-08-27T19:00+09:00",
       "second_sale_jst": "2026-09-14T19:00+09:00",
-      "mix_doubles": "sold_out",
+      "mix_doubles": "available",
       "divisions_available": [
         "PRO Women",
+        "Doubles Mixed",
         "Doubles PRO Women",
         "Relay Men",
         "Relay Women",
@@ -330,8 +331,22 @@
       "sale_date": "2026-11-03",
       "sale_start_jst": "2026-11-03T13:00+09:00",
       "second_sale_jst": null,
-      "mix_doubles": "sold_out",
-      "divisions_available": [],
+      "mix_doubles": "available",
+      "divisions_available": [
+        "Men",
+        "Women",
+        "PRO Men",
+        "PRO Women",
+        "Doubles Men",
+        "Doubles Women",
+        "Doubles Mixed",
+        "Doubles PRO Men",
+        "Doubles PRO Women",
+        "Relay Men",
+        "Relay Women",
+        "Relay Mixed",
+        "Spectator"
+      ],
       "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
       "portal_url": null,
       "first_seen": "2026-08-12",
@@ -512,12 +527,15 @@
       "second_sale_jst": null,
       "mix_doubles": "sold_out",
       "divisions_available": [
-        "Men",
         "Women",
+        "PRO Men",
         "PRO Women",
+        "Doubles Men",
         "Doubles Women",
         "Doubles PRO Men",
         "Doubles PRO Women",
+        "Relay Men",
+        "Relay Women",
         "Relay Mixed",
         "Spectator"
       ],
