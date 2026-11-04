@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-04T19:17:15+09:00",
+  "updated_at": "2026-11-05T06:13:18+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 16,
@@ -14,16 +14,12 @@
       "event_start": "2027-04-15",
       "event_end": "2027-04-18",
       "venue": "Port Messe Nagoya Exhibition Hall - 3",
-      "ticket_status": "on_sale",
+      "ticket_status": "sold_out",
       "sale_date": "2026-10-29",
       "sale_start_jst": "2026-10-29T18:00+09:00",
       "second_sale_jst": null,
       "mix_doubles": "sold_out",
       "divisions_available": [
-        "Women",
-        "Doubles Women",
-        "Adaptive Men",
-        "Adaptive Women",
         "Spectator"
       ],
       "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
@@ -332,14 +328,10 @@
       "divisions_available": [
         "Men",
         "Women",
-        "PRO Men",
         "PRO Women",
         "Doubles Men",
         "Doubles Women",
         "Doubles Mixed",
-        "Doubles PRO Men",
-        "Doubles PRO Women",
-        "Relay Men",
         "Relay Women",
         "Relay Mixed",
         "Spectator"
