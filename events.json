@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-05T06:13:18+09:00",
+  "updated_at": "2026-11-05T19:10:51+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 16,
@@ -328,7 +328,6 @@
       "divisions_available": [
         "Men",
         "Women",
-        "PRO Women",
         "Doubles Men",
         "Doubles Women",
         "Doubles Mixed",
@@ -438,7 +437,6 @@
       "second_sale_jst": "2026-06-26T19:00+09:00",
       "mix_doubles": "sold_out",
       "divisions_available": [
-        "Women",
         "Relay Men",
         "Relay Women",
         "Adaptive Men",
@@ -475,6 +473,7 @@
       "second_sale_jst": "2026-08-20T19:00+09:00",
       "mix_doubles": "available",
       "divisions_available": [
+        "Women",
         "Doubles Men",
         "Doubles Women",
         "Doubles Mixed",
@@ -513,13 +512,15 @@
       "sale_date": "2026-07-16",
       "sale_start_jst": "2026-07-16T13:00+09:00",
       "second_sale_jst": null,
-      "mix_doubles": "sold_out",
+      "mix_doubles": "available",
       "divisions_available": [
         "Men",
         "Women",
+        "PRO Men",
         "PRO Women",
         "Doubles Men",
         "Doubles Women",
+        "Doubles Mixed",
         "Doubles PRO Men",
         "Doubles PRO Women",
         "Relay Men",
