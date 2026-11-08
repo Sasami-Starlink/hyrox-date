@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-08T18:46:14+09:00",
+  "updated_at": "2026-11-09T04:27:55+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
   "count": 16,
@@ -333,6 +333,7 @@
         "Doubles Men",
         "Doubles Women",
         "Doubles Mixed",
+        "Doubles PRO Men",
         "Relay Women",
         "Relay Mixed",
         "Spectator"
