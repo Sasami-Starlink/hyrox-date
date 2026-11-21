@@ -1,8 +1,8 @@
 {
-  "updated_at": "2026-11-21T19:32:05+09:00",
+  "updated_at": "2026-11-22T05:51:09+09:00",
   "source": "roxradar tickets-api",
   "scope": "日本＋東・東南アジア",
-  "count": 16,
+  "count": 17,
   "events": [
     {
       "id": "hyrox-nagoya-2027",
@@ -572,6 +572,29 @@
       "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
       "portal_url": null,
       "first_seen": "2026-10-14",
+      "travel_rank": 900,
+      "travel": null,
+      "presale_jst": null
+    },
+    {
+      "id": "hyrox-incheon-2027",
+      "code": "",
+      "name": "HYROX Incheon 2027",
+      "city": "Incheon",
+      "country": "韓国",
+      "region": "asia",
+      "event_start": "2027-05-12",
+      "event_end": "2027-05-16",
+      "venue": null,
+      "ticket_status": "on_sale",
+      "sale_date": "2026-12-03",
+      "sale_start_jst": "2026-12-03T18:00+09:00",
+      "second_sale_jst": null,
+      "mix_doubles": "sold_out",
+      "divisions_available": [],
+      "detail_url": "https://alerts.roxradar.com/hyrox-ticket-status",
+      "portal_url": null,
+      "first_seen": "2026-11-21",
       "travel_rank": 900,
       "travel": null,
       "presale_jst": null
